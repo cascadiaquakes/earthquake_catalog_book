@@ -1,4 +1,4 @@
-![Deployement of book](https://github.com/cascadiaquakes/jupyter-book-template/actions/workflows/deploy-book.yml/badge.svg) [Link to Jupyter-book](https://cascadiaquakes.github.io/jupyter-book-template/)
+![Deployement of book](https://github.com/cascadiaquakes/earthquake_catalog/actions/workflows/deploy-book.yml/badge.svg) [Link to Jupyter-book](https://cascadiaquakes.github.io/earthquake_catalog/)
 
 # jupyter-book-template
 
