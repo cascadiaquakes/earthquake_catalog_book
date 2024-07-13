@@ -1,8 +1,8 @@
 # Book settings
 # Learn more at https://jupyterbook.org/customize/config.html
 
-title: Template Jupyter-book
-author: Loïc Bachelot
+title: CRESCENT Earthquake Catalog Book
+author: Amanda Thomas, Loïc Bachelot, and Daniel Trugman
 logo: Crescent_logo.png
 
 # Force re-execution of notebooks on each build.
@@ -13,7 +13,7 @@ execute:
 # Define the name of the latex output file for PDF builds
 latex:
   latex_documents:
-    targetname: book.tex
+    targetname: crescent_earthquake_book.tex
 
 # Add a bibtex file so that we can create citations
 bibtex_bibfiles:

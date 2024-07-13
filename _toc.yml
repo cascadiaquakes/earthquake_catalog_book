@@ -4,7 +4,10 @@
 format: jb-book
 root: intro
 chapters:
-- file: notebooks/1_first_nb
-- file: notebooks/2_second_nb
-- file: notebooks/3_third_nb
+- file: notebooks/choosing_stations
+- file: notebooks/phase_detection
+- file: notebooks/combining_picks
+- file: notebooks/velocity_model
+- file: notebooks/gridding_cascadia
+- file: notebooks/absolute_earthquake_locations
 - file: conclusion
