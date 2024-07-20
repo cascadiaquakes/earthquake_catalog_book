@@ -3,11 +3,23 @@
 
 format: jb-book
 root: intro
-chapters:
-- file: notebooks/choosing_stations
-- file: notebooks/phase_detection
-- file: notebooks/combining_picks
-- file: notebooks/velocity_model
-- file: notebooks/gridding_cascadia
-- file: notebooks/absolute_earthquake_locations
-- file: conclusion
+parts:
+  - caption: Earthquakes in Cascadia
+    chapters:
+    - file: notebooks/cataloged_seismicity
+    - file: notebooks/monroe_test
+  - caption: Velocity Model
+    chapters:
+    - file: notebooks/velocity_model
+    - file: notebooks/gridding_cascadia
+  - caption: Stations
+    chapters:
+    - file: notebooks/choosing_stations
+  - caption: Augmenting with Machine Learning
+    chapters:
+    - file: notebooks/phase_detection
+    - file: notebooks/combining_picks
+  - caption: Conclusions
+    chapters:
+    - file: conclusion.md
+    - file: notebooks/bibliography
