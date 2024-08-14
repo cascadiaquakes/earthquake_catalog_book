@@ -12,6 +12,10 @@ parts:
     chapters:
     - file: notebooks/velocity_model
     - file: notebooks/gridding_cascadia
+      sections:
+      - file: notebooks/1_write_poly_param
+      - file: notebooks/2_read_velocity_to_xr
+      - file: notebooks/3_velocity_to_poly_nnl
   - caption: Stations
     chapters:
     - file: notebooks/choosing_stations
