@@ -16,13 +16,24 @@ parts:
       - file: notebooks/1_write_poly_param
       - file: notebooks/2_read_velocity_to_xr
       - file: notebooks/3_velocity_to_poly_nnl
+      - file: notebooks/4_config_file_nll
+      - file: notebooks/5_Vel2Grid2Time_NLLoc
+      - file: notebooks/6_check_nllgrid
   - caption: Stations
     chapters:
     - file: notebooks/choosing_stations
   - caption: Augmenting with Machine Learning
     chapters:
-    - file: notebooks/phase_detection
-    - file: notebooks/combining_picks
+      - file: notebooks/phase_detection
+      - file: notebooks/combining_picks
+  - caption: Earthquake location
+    chapters:
+    - file: notebooks/absolute_earthquake_locations
+      sections:
+      - file: notebooks/1_format_picks_nll
+      - file: notebooks/2_config_file_nll
+      - file: notebooks/3_run_location
+      - file: notebooks/4_compare_location_PNSN
   - caption: Conclusions
     chapters:
     - file: conclusion.md
