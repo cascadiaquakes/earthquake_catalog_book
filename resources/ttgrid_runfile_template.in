@@ -1,0 +1,206 @@
+# =============================================================================
+# Generic control file statements
+# =============================================================================
+#
+
+# CONTROL - Control
+# required, non-repeatable
+# Syntax 1: CONTROL messageFlag randomNumberSeed
+# Sets various general program control parameters.
+#
+#    messageFlag (integer, min:-1, default:1) sets the verbosity level for messages printed to the terminal ( -1 = completely silent, 0 = error messages only, 1 = 0 + higher-level warning and progress messages, 2 and higher = 1 + lower-level warning and progress messages + information messages, ...)
+#    randomNumberSeed (integer) integer seed value for generating random number sequences (used by program NLLoc to generate Metropolis samples and by program Time2EQ to generate noisy time picks)
+#
+
+CONTROL 1 54321
+
+# TRANS - Geographic Transformation
+# required, non-repeatable
+# Syntax 1: TRANS GLOBAL
+# Syntax 2: TRANS SIMPLE latOrig longOrig rotAngle
+# Syntax 3: TRANS NONE
+# Syntax 4: TRANS SDC latOrig longOrig rotAngle
+# Syntax 5: TRANS LAMBERT refEllipsoid latOrig longOrig firstStdParal secondStdParal rotAngle
+# Syntax 6: TRANS TRANS_MERC refEllipsoid latOrig longOrig rotAngle
+# Syntax 7: TRANS AZIMUTHAL_EQUIDIST refEllipsoid latOrig longOrig rotAngle
+# Sets geographic to working coordinates transformation parameters. The GLOBAL option sets spherical regional/teleseismic mode, with no geographic transformation - most position values are input and used directly as latitude and longitude in degrees. The SIMPLE, SDC, LAMBERT and TRANS_MERC options make transformations of geographic coordinates into a Cartesian/rectangular system. The NONE transformation performs no geographic conversion.
+#
+#    latOrig (float, min:-90.0, max:90.0) latitude in decimal degrees of the rectangular coordinates origin
+#    longOrig (float, min:-180.0, max:180.0) longitude in decimal degrees of the rectangular coordinates origin
+#    rotAngle (float, min:-360.0, max:360.0) rotation angle of geographic north in degrees clockwise relative to the rectangular coordinates system Y-axis
+#    refEllipsoid (choice: WGS-84 GRS-80 WGS-72 Australian Krasovsky International Hayford-1909 Clarke-1880 Clarke-1866 Airy Bessel Hayford-1830 Sphere) reference ellipsoid name
+#    latOrig (float, min:-90.0, max:90.0) latitude in decimal degrees of the rectangular coordinates origin
+#    longOrig (float, min:-180.0, max:180.0) longitude in decimal degrees of the rectangular coordinates origin
+#    firstStdParal secondStdParal (float, min:-90.0, max:90.0) first and second standard parallels (meridians) in decimal degrees
+#    rotAngle (float, min:-360.0, max:360.0) rotation angle of geographic north in degrees clockwise relative to the rectangular coordinates system Y-axis
+#
+
+TRANS SIMPLE 48.0 -124.5 0.0 
+
+#
+# =============================================================================
+# END of Generic control file statements
+# =============================================================================
+
+# =============================================================================
+# Vel2Grid control file statements
+# =============================================================================
+#
+
+# VGOUT - Output File Root Name
+# required, non-repeatable
+# Syntax 1: VGOUT fileRoot
+# Specifies the directory path and file root name (no extension) for the output velocity grid.
+#
+#    fileRoot (string) full or relative path and file root name (no extension) for output
+#
+
+VGOUT  ./model/layer
+
+# VGTYPE - Wave Type
+# required, repeatable
+# Syntax 1: VGTYPE waveType
+# Specifies the physical wave type for a velocity grid.
+#
+#    waveType (choice: P S) wave type
+#
+
+VGTYPE P
+
+# VGGRID - Grid Description
+# required, non-repeatable
+# Syntax 1: VGGRID xNum yNum zNum xOrig yOrig zOrig dx dy dz gridType
+# Specifies the size and type of the 3D velocity grid.
+#
+#    xNum yNum zNum (integer, min:2) number of grid nodes in the x, y and z directions
+#    xOrig yOrig zOrig (float) x, y and z location of the grid origin in km relative to the geographic origin.
+#    dx dy dz (float) grid node spacing in kilometers along the x, y and z axes
+#    gridType (choice: VELOCITY VELOCITY_METERS SLOWNESS VEL2 SLOW2 SLOW_2_METERS SLOW_LEN) physical quantity to store on grid ( VELOCITY = km/s, VELOCITY_METERS = m/s, SLOWNESS = s/km, VEL2 = vel**2, SLOW2 = (s/km)**2, SLOW_2_METERS = slow**2 ((s/m)**2), SLOW_LEN = slow*dx (sec)).
+#
+# Layer 2DGrid (NOTE: num_grid_x must be = 2 for 2D grids)
+#
+
+VGGRID 
+
+## START -- Vel2Grid
+#
+
+# LAYER - Velocity Model - Layer
+# optional, repeatable
+# Syntax 1: LAYER depth VpTop VpGrad VsTop VsGrad rhoTop rhoGrad
+# Specifies a constant or gradient velocity layer.
+#
+#    depth (float) depth to top of layer (use negative values for layers above z=0)
+#    VpTop VsTop rhoTop (float) P velocity, and S velocity in km/s and density in kg/m**3 at the top of the layer.
+#    VpGrad VsGrad rhoGrad (float) Linear P velocity and S velocity gradients in km/s/km and density gradient in kg/m**3/km increasing directly downwards from the top of the layer.
+#
+
+#LAYER depth Vp_top Vp_grad Vs_top Vs_grad p_top p_grad
+
+## END -- Vel2Grid
+
+## START -- Vel2Grid3D
+
+# VGINP - Input Velocity Model File
+# required, non-repeatable
+# Syntax 1: VGINP inputFile fileType params
+# Specifies the path/name, type and optional parameters of the input velocity model file.
+# 	   inputFile (string) full or relative path and filename
+#	   fileType (choice: SIMUL2K FDTOMO) File type of input 3D velocity models defined by interpolation between control point nodes.
+#      params (float) For FDTOMO type requires: orig_x orig_y orig_z num_x num_y num_z d_x d_y d_z
+# 
+
+#VGINP
+
+# VGCLIP - Clip Limits for Output Velocity
+# optional, non-repeatable
+# Syntax 1: VGCLIP Vmin Vmax
+# Sets minimum and maximum clip limits for the output velocity values, or controls sharpening of velocity difference an interface
+# 	   Vmin Vmax (float) minimum and maximum clip limits for the output velocity values.
+# 
+
+#VGCLIP
+
+## END -- Vel2Grid3D
+
+#
+# =============================================================================
+# END of Vel2Grid control file statements
+# =============================================================================
+
+# =============================================================================
+# Grid2Time control file statements
+# =============================================================================
+#
+
+# GTFILES - Input and Output File Root Name
+# required, non-repeatable
+# Syntax 1: GTFILES ttimeFileRoot outputFileRoot waveType iSwapBytesOnInput
+# Specifies the directory path and file root name (no extension), and the wave type identifier for the input velocity grid and output time grids.
+#
+#    ttimeFileRoot (string) full or relative path and file root name (no extension) for input velocity grid (generated by program Vel2Grid)
+#    outputFileRoot (string) full or relative path and file root name (no extension) for output travel-time and take-off angle grids
+#    waveType (choice: P S) wave type
+#    iSwapBytesOnInput (integer, min:0, max:1, default:0) flag to indicate if hi and low bytes of input velocity grid file should be swapped
+#
+
+GTFILES  ./model/layer  ./time/layer P
+
+# GTMODE - Program Modes
+# required, non-repeatable
+# Syntax 1: GTMODE gridMode angleMode
+# Specifies several program run modes.
+#
+#    gridMode (choice: GRID3D GRID2D) grid type ( GRID3D for a 3D, Nx*Ny*Nz grid or GRID2D for a 2D, 2*Ny*Nz grid)
+#    angleMode (choice: ANGLES_YES ANGLES_NO) sets if take-off angles are calculated and an angles grid is output ( ANGLES_YES for angles calulcation or ANGLES_NO for no angles calculation)
+#
+
+GTMODE GRID3D ANGLES_NO
+
+# -----------------------------------------------------------------------------
+# description of source (e.g. seismic station) for calculating travel-time field
+# -----------------------------------------------------------------------------
+#
+# GTSRCE - Source Description
+# required, repeatable
+# Syntax 1: GTSRCE label XYZ xSrce ySrce zSrce elev
+# Syntax 2: GTSRCE label LATLON latSrce longSrce zSrce elev
+# Syntax 3: GTSRCE label LATLONDM latDegSrce latMinSrce latDir longDegSrce longMinSrce longDir zSrce elev
+# Syntax 4: GTSRCE label LATLONDS latDegSrce latMinSrce latSecSrce latDir longDegSrce longMinSrce longSecSrce longDir zSrce elev
+# Specifies a source location. One time grid and one angles grid (if requested) will be generated for each source. Four formats are supported: XYZ (rectangular grid coordinates), LATLON (decimal degrees for latitude/longitude), LATLONDM (degrees + decimal minutes for latitude/longitude) and LATLONDS (degrees + minutes + decimal seconds for latitude/longitude).
+#
+#    label (string) source label ( i.e. a station code: ABC )
+#    xSrce ySrce (float) x and y grid positions relative to geographic origin in kilometers for source
+#    zSrce (float) z grid position (depth, positive DOWN) in kilometers for source
+#    elev (float) elevation above z grid position (positive UP) in kilometers for source
+#    latSrce (float, min:-90.0, max:90.0) latitude in decimal degrees for source (pos = North)
+#    longSrce (float, min:-180.0, max:180.0) longitude in decimal degrees for source (pos = East)
+#    latDegSrce latMinSrce latSecSrce (float) latitude degrees, minutes and seconds for source
+#    longDegSrce longMinSrce longSecSrce (float) longitude degrees, minutes and seconds for source
+#    latDir (choice: N S) geographic direction
+#    longDir (choice: W E) geographic direction
+#
+# Examples:
+#
+#GTSRCE  STA   XYZ   27.25  -67.78  0.0  1.242
+#GTSRCE  CALF  LATLON   43.753  6.922  0.0  1.242
+#GTSRCE  JOU  LATLONDM  43 38.00 N  05 39.52 E   0.0   0.300
+#
+
+INCLUDE obs/stations_coords_svi.txt
+
+# GT_PLFD - Podvin and Lecomte Finite Difference
+# required, non-repeatable, for Podvin and Lecomte finite difference, must not be present otherwise
+# Syntax 1: GT_PLFD hs_eps_init message_flag
+# Selects Podvin and Lecomte finite difference method and specifies method parameters.
+#
+#    hs_eps_init (float, min:0.0) fraction (typically 1.0E-3) defining the tolerated model inhomogeneity for exact initialization. A tolerance larger than 0.01 will potentially create errors larger than those involved by the F.D. scheme without any exact initialization.
+#    message_flag (integer, min:0, max:2) Message flag (0:silent, 1:few messages, 2:verbose) A negative value inhibits "clever" initialization.
+#
+
+GT_PLFD  1.0e-3  0
+
+#
+# =============================================================================
+# END of Grid2Time control file statements
+# =============================================================================
