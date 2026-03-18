@@ -34,6 +34,9 @@ parts:
       - file: notebooks/2_config_file_nll
       - file: notebooks/3_run_location
       - file: notebooks/4_compare_location_PNSN
+  - caption: Brenton Workflow Handoff
+    chapters:
+    - file: brenton_workflow
   - caption: Conclusions
     chapters:
     - file: conclusion.md
