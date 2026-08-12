@@ -1,10 +1,13 @@
 # Brenton Workflow Handoff
 
-The earthquake catalog workflow developed by Brenton Hirao during his
-postdoc. The pipeline builds a merged, deduplicated regional earthquake
-catalog from raw phase picks, a Vs velocity model, and station
-metadata. This page captures the pipeline in execution order so the
-team can pick up the work after Brenton's departure.
+The earthquake catalog workflow developed by Brenton Hirao. The pipeline
+builds a merged, deduplicated regional earthquake catalog from raw phase
+picks, a Vs velocity model, and station metadata. This page captures the
+pipeline in execution order so the team can pick up the work after
+Brenton's departure.
+
+The driver scripts referenced below live in
+[`scripts/brenton/`](https://github.com/cascadiaquakes/earthquake_catalog_book/tree/main/scripts/brenton).
 
 ## Step-by-step workflow
 
