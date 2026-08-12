@@ -1,44 +1,94 @@
 # Brenton Workflow Handoff
 
-## Overview
-
-This section is intended to document Brenton's workflow for the earthquake catalog effort and preserve the information needed for continuity as work is transitioned to the broader team.
-
-## Why this section is separate
-
-This handoff section is kept separate from the current book structure for now so that the existing workflow remains unchanged while Brenton's process, assumptions, and implementation details are gathered and reviewed.
-
-## Current status
-
-This section is under development and will be updated as workflow details are confirmed during handoff with Brenton and Amanda.
-
-## Questions to resolve
-
-The following questions need to be clarified during handoff:
-
-- What problem or gap was the new workflow designed to address?
-- Which parts of the workflow are different from the current documented process?
-- Which grids, model inputs, configuration choices and assumptionss are specific to his implementation?
-- Which steps are currently operational?
-- Which pieces are still exploratory or planned future work?
-- What should remain separate, and what may later be integrated into the main workflow sections?
-
-## Inputs and dependencies
-
-This section will document the data inputs, model inputs, configuration files, scripts, software dependencies, and external resources required to run Brenton's workflow.
+The earthquake catalog workflow developed by Brenton Hirao during his
+postdoc. The pipeline builds a merged, deduplicated regional earthquake
+catalog from raw phase picks, a Vs velocity model, and station
+metadata. This page captures the pipeline in execution order so the
+team can pick up the work after Brenton's departure.
 
 ## Step-by-step workflow
 
-This section will document the workflow in execution order, including the purpose of each step, required inputs, generated outputs, and any manual decisions or parameters that affect downstream results.
+The pipeline runs in five stages. Each stage below lists the driver
+script, its purpose, and any per-stage notes.
 
-## Outputs
+### 1. Experimental setup — geographic grid boundaries
 
-This section will document the main outputs produced by the workflow, including intermediate files, final products, and any artifacts needed by later processing stages.
+**Script:** `Set_grid_boundaries.py`
 
-## Known caveats
+Defines the six regional bounding boxes that every downstream stage is
+chunked over. Region extents and inter-region overlap live here.
 
-This section will document known limitations, assumptions, missing pieces, and any steps that require manual interpretation or validation.
+### 2. Process the velocity model, topography, and stations
 
-## Future roadmap
+Four scripts run in sequence:
 
-This section will document planned extensions or follow-on work identified during handoff, including any decisions about future integration into the main earthquake catalog workflow.
+**a. Trim velocity grids** — `trim_vs_grids_V2_aeqd_topocorr.py`  
+Trims the source Vs grids to each region, applies the AEQD projection,
+and corrects for topography.
+
+**b. Travel-time grids** — `Make_tt_grids_v2.py`  
+Computes per-station travel-time grids from the trimmed velocity model.
+
+**c. Prepare topography** — `Prep_topo.py`  
+Prepares the topographic datum used by the location step.
+
+**d. Regional Vp/Vs ratios** — `Make_regional_wadati.py`  
+Derives regional Vp/Vs ratios via Wadati analysis.
+
+### 3. Association
+
+**Script:** `Association_v1_global.py`
+
+Associates individual phase picks into candidate events. The output
+feeds directly into the NonLinLoc stage below.
+
+### 4. NonLinLoc — initial locations
+
+Two scripts:
+
+**a. Prepare NonLinLoc runfiles and obs files** — `Make_nlloc_obs_runfiles.py`  
+Consumes the association output and emits NonLinLoc obs files and
+per-region runfiles.
+
+**b. Run NonLinLoc on a cluster** — `Nll_driver_v2.py`  
+Driver that runs NonLinLoc across regions on the cluster. Produces
+per-event hypocenters with associated uncertainty ellipsoids.
+
+### 5. Post-processing
+
+**Script:** `Postprocessing_combined.py`
+
+Runs three sub-steps end-to-end:
+
+- **a.** Adjust the topographic datum.
+- **b.** Merge the six regional catalogs into a single catalog.
+- **c.** Remove duplicate events in the overlapping (intersecting)
+  regions.
+
+Output: the final merged, deduplicated earthquake catalog.
+
+## Updates — associating and locating new events after 2024
+
+:::{admonition} To document with Brenton
+:class: important
+Which stages need to be rerun for an incremental update, and which can
+reuse cached inputs from the initial catalog build?
+:::
+
+## Running the pipeline
+
+Environment, dependencies, and cluster setup will be documented here
+once Brenton hands over the codebase and environment specification.
+
+- **Codebase:** _repo / archive location TBD_
+- **Python environment:** _requirements.txt or conda env yml TBD_
+- **External tools:** NonLinLoc (cluster install), any GMT / topo utilities TBD
+- **Cluster:** name, queue, and module load commands TBD
+- **Data locations:** phase picks, station metadata, source Vs grids,
+  topography rasters — paths TBD
+
+## Contacts
+
+- **Brenton Hirao** — original author of this workflow
+- **Amanda M. Thomas** — <amthom@ucdavis.edu>
+- **William Marfo** — <wmarfo@ucdavis.edu>
