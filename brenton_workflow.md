@@ -1,74 +1,111 @@
 # Brenton Workflow Handoff
 
-The earthquake catalog workflow developed by Brenton Hirao. The pipeline
-builds a merged, deduplicated regional earthquake catalog from raw phase
-picks, a Vs velocity model, and station metadata. This page captures the
-pipeline in execution order so the team can pick up the work after
-Brenton's departure.
+The enhanced earthquake catalog workflow developed by Brenton Hirao. The
+pipeline builds a merged, deduplicated regional catalog from ML-derived
+phase picks (PNW-EQTransformer in the PNSN region; PhaseNet picks from
+the Ni et al., 2025 global database in Northern California and Northwest
+Nevada), the CRESCENT Community Velocity Model (CVM; He et al., 2026),
+and permanent-network station metadata across a 2002–2024 study window.
+This page captures the pipeline in execution order so the team can pick
+up the work after Brenton's departure.
 
 The driver scripts referenced below live in
 [`scripts/brenton/`](https://github.com/cascadiaquakes/earthquake_catalog_book/tree/main/scripts/brenton).
+
+:::{admonition} Scientific context
+:class: note
+The scientific rationale, equations, and results that motivate each
+stage below are documented in the CRESCENT enhanced catalog manuscript
+(Hirao et al., in prep). Section references in each stage
+(e.g. *Methods §2.3*) point to that draft.
+:::
 
 ## Step-by-step workflow
 
 The pipeline runs in five stages. Each stage below lists the driver
 script, its purpose, and any per-stage notes.
 
-### 1. Experimental setup — geographic grid boundaries
+### 1. Experimental setup — subregion grid boundaries
 
 **Script:** `Set_grid_boundaries.py`
 
-Defines the six regional bounding boxes that every downstream stage is
-chunked over. Region extents and inter-region overlap live here.
+Defines the six subregions (W1–W3 along the west, E1–E3 along the east)
+that every downstream stage is chunked over. Subregion extents and the
+110–130 km inter-subregion overlap live here.
+(*Methods §2.2*)
 
 ### 2. Process the velocity model, topography, and stations
 
-Four scripts run in sequence:
+Four scripts run in sequence (all corresponding to *Methods §2.2*):
 
 **a. Trim velocity grids** — `trim_vs_grids_V2_aeqd_topocorr.py`  
-Trims the source Vs grids to each region, applies the AEQD projection,
+Trims the CVM Vs grids to each subregion, applies the AEQD projection,
 and corrects for topography.
 
 **b. Travel-time grids** — `Make_tt_grids_v2.py`  
-Computes per-station travel-time grids from the trimmed velocity model.
+Computes per-station P-wave travel-time grids from the trimmed velocity
+model using the Fast-Marching Method (Pykonal; White et al., 2020).
 
 **c. Prepare topography** — `Prep_topo.py`  
 Prepares the topographic datum used by the location step.
 
 **d. Regional Vp/Vs ratios** — `Make_regional_wadati.py`  
-Derives regional Vp/Vs ratios via Wadati analysis.
+Derives subregion-specific Vp/Vs ratios via Wadati (1933) analysis with
+stratified sampling over 10×10×2 km³ bins.
 
 ### 3. Association
 
 **Script:** `Association_v1_global.py`
 
-Associates individual phase picks into candidate events. The output
-feeds directly into the NonLinLoc stage below.
+Associates individual phase picks into candidate events with the PyOcto
+associator (Münchmeyer et al., 2024). Events with at least 3 P- and 3
+S-wave picks recorded by at least 6 stations are retained. Output feeds
+directly into the NonLinLoc stage below.
+(*Methods §2.3*)
 
-### 4. NonLinLoc — initial locations
+### 4. NonLinLoc — initial locations and SSST refinement
 
 Two scripts:
 
 **a. Prepare NonLinLoc runfiles and obs files** — `Make_nlloc_obs_runfiles.py`  
 Consumes the association output and emits NonLinLoc obs files and
-per-region runfiles.
+per-subregion runfiles.
 
 **b. Run NonLinLoc on a cluster** — `Nll_driver_v2.py`  
-Driver that runs NonLinLoc across regions on the cluster. Produces
-per-event hypocenters with associated uncertainty ellipsoids.
+Driver that runs NonLinLoc (Lomax et al., 2014) across subregions on
+the cluster with OCT-TREE nested gridsearch and EDT weighting for
+initial locations, followed by the source-specific station correction
+term (SSST; Lomax and Savvaidis, 2020) refinement pass. Produces
+per-event hypocenters with 3-D uncertainty ellipsoids.
+(*Methods §2.3–2.4*)
 
 ### 5. Post-processing
 
 **Script:** `Postprocessing_combined.py`
 
-Runs three sub-steps end-to-end:
+Runs three sub-steps end-to-end (*Methods §2.5*):
 
 - **a.** Adjust the topographic datum.
-- **b.** Merge the six regional catalogs into a single catalog.
-- **c.** Remove duplicate events in the overlapping (intersecting)
-  regions.
+- **b.** Merge the six subregional catalogs into a single catalog.
+- **c.** Remove duplicate events in overlapping subregions using a
+  Ball-Tree neighbor search (Scikit-learn), matching pairs within 2 s
+  and 50 km that share phase arrivals, retaining the event with the
+  smallest azimuthal gap.
 
-Output: the final merged, deduplicated earthquake catalog.
+Output: the merged, deduplicated earthquake catalog.
+
+:::{admonition} Not yet covered by driver scripts on this page
+:class: important
+Two paper sections describe post-catalog steps whose driver scripts are
+not yet included above and will be added when Brenton hands them over:
+
+- **Magnitude scale derivation** (*Methods §2.6*) — regional
+  vertical-component local-magnitude inversion with per-station
+  correction terms.
+- **Benchmarking / merge with ANSS network catalogs** (*Methods §2.7*) —
+  relocation of PNSN/NCEDC/SCEDC/NEIC events with LibComCat and
+  reconciliation with the ML catalog.
+:::
 
 ## Updates — associating and locating new events after 2024
 
