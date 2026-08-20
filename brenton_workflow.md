@@ -15,9 +15,12 @@ The driver scripts referenced below live in
 :::{admonition} Scientific context
 :class: note
 The scientific rationale, equations, and results that motivate each
-stage below are documented in the CRESCENT enhanced catalog manuscript
-(Hirao et al., in prep). Section references in each stage
-(e.g. *Methods §2.3*) point to that draft.
+stage below are documented in Chapter 4 of Brenton Hirao's PhD thesis,
+*Enhanced Multi-decade Long Earthquake Catalogs at Multiple Scales:
+Insights into Volcanic and Tectonic Environments in the Pacific
+Northwest* (University of Oregon, 2026), which is also being prepared
+as a standalone journal paper. Section references in each stage
+(e.g. *Methods §2.3*) point to Chapter 4 of that thesis.
 :::
 
 ## Step-by-step workflow
