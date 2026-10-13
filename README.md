@@ -5,6 +5,7 @@
 Notebooks and documentation for the workflow used to build the CRESCENT earthquake catalog, from station selection and velocity model gridding to machine-learning phase picking and earthquake location.
 
 **Read the book:** https://cascadiaquakes.github.io/earthquake_catalog_book/
+
 **Catalog viewer:** https://eqcat.cascadiaquakes.org
 
 ---
